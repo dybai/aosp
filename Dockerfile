@@ -21,6 +21,9 @@ RUN dpkg-reconfigure -f noninteractive tzdata
 # Add user, Maintain consistency with the host.
 RUN useradd --create-home --shell /bin/bash -p linux123 dybai
 RUN echo 'dybai:linux123' | chpasswd
+# Modify UID and GID to be consistent with the host.
+# RUN usermod -u 1000 dybai
+# RUN groupmod -g 1000 dybai
 RUN adduser dybai sudo
 USER dybai
 WORKDIR /home/dybai
