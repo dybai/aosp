@@ -2,8 +2,13 @@ FROM ubuntu:18.04
 
 MAINTAINER bdy1234567@126.com
 
-# docker build -t aosp:2.0 dockerfile
+# docker build -t aosp:2.0 dockerfile --build-arg user=dybai --build-arg password=linux123 --build-arg uid=1000 --build-arg gid=1000
 # docker run -it -v /home/dybai/docker/android:/home/dybai/android aosp:2.0 /bin/bash
+
+ARG user=dybai
+ARG password=linux123
+ARG uid=1000
+ARG gid=1000
 
 # Set default timezone, Quietly install tzdata.
 ENV DEBIAN_FRONTEND noninteractive
@@ -19,15 +24,16 @@ RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 RUN dpkg-reconfigure -f noninteractive tzdata
 
 # Add user, Maintain consistency with the host.
-RUN useradd --create-home --shell /bin/bash -p linux123 dybai
-RUN echo 'dybai:linux123' | chpasswd
-# Modify UID and GID to be consistent with the host.
-# RUN usermod -u 1000 dybai
-# RUN groupmod -g 1000 dybai
-RUN adduser dybai sudo
-USER dybai
-WORKDIR /home/dybai
+RUN useradd --create-home --shell /bin/bash -p ${password} ${user}
+RUN echo "${user}:${password}" | chpasswd
 
-# VOLUME ["/home/dybai/docker/android"]
+# Modify UID and GID to be consistent with the host.
+RUN usermod -u ${uid} ${user}
+RUN groupmod -g ${gid} ${user}
+
+RUN adduser ${user} sudo
+
+USER ${user}
+WORKDIR /home/${user}
 
 CMD /bin/bash
